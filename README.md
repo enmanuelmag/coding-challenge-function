@@ -4,6 +4,8 @@ Requirements:
 - npm
 - Node.js
 
+## Web project
+
 ## Install dependencies
 ```bash
 npm install
@@ -22,6 +24,22 @@ npm run build
 npm run start
 ```
 
+## Backend project (Google Cloud Functions)
+
+### Install Firebase CLI and dependencies
+```bash
+npm install -g firebase-tools
+cd functions
+npm install
+```
+
+### Deploy functions
+
+The deployment is made using GitHub Actions, but if you want to deploy manually, you can use the following command:
+```bash
+firebase deploy --only functions
+```
+
 ## Design decisions
 
 For website:
@@ -34,3 +52,4 @@ For website:
 For backend:
 - The backend is perform by a Firebase Cloud Function, is a serverless function that is triggered by an HTTP request.
 - The deployment is made using GitHub Actions, that is a CI/CD tool that is integrated with GitHub. The deployment is made to Firebase Hosting and Firebase Functions.
+- The backend also has request validation using Zod as the frontend, to validate the data that we are receiving from the client.
