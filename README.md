@@ -33,4 +33,4 @@ For website:
 
 For backend:
 - The backend is perform by a Firebase Cloud Function, is a serverless function that is triggered by an HTTP request.
-- The deployment is made using the Firebase CLI.
+- The deployment is made using GitHub Actions, that is a CI/CD tool that is integrated with GitHub. The deployment is made to Firebase Hosting and Firebase Functions.
