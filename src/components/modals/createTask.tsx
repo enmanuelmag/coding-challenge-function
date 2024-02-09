@@ -1,6 +1,7 @@
 import { Button, Group, Modal, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { TaskCreateSchema, TaskCreateType } from '@schemas/task';
+import React from 'react';
 
 type CreateTaskModalProps = {
   opened: boolean;
@@ -10,6 +11,8 @@ type CreateTaskModalProps = {
 };
 
 export const CreateTaskModal = (props: CreateTaskModalProps) => {
+  const { opened, onCancel, onConfirm, isLoading } = props;
+
   const form = useForm<TaskCreateType>({
     validate: zodResolver(TaskCreateSchema),
     initialValues: {
@@ -19,7 +22,12 @@ export const CreateTaskModal = (props: CreateTaskModalProps) => {
     },
   });
 
-  const { opened, onCancel, onConfirm, isLoading } = props;
+  React.useEffect(() => {
+    if (opened) {
+      form.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened]);
 
   return (
     <Modal opened={opened} onClose={handleClose} title="Create new task">
@@ -31,6 +39,7 @@ export const CreateTaskModal = (props: CreateTaskModalProps) => {
           {...form.getInputProps('title')}
         />
         <TextInput
+          mt="md"
           withAsterisk
           label="Description"
           placeholder="Type the description of the task"
@@ -55,6 +64,7 @@ export const CreateTaskModal = (props: CreateTaskModalProps) => {
   );
 
   function handleClose() {
+    if (isLoading) return;
     onCancel();
     form.reset();
   }

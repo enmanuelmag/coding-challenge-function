@@ -13,10 +13,10 @@ import {
 } from '@mantine/core';
 import React from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { IconTrash, IconCheck } from '@tabler/icons-react';
 import { CreateTaskModal } from '@components/modals/createTask';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { TaskCreateType, type TaskType } from '@schemas/task';
 
@@ -29,6 +29,8 @@ import './App.css';
 function App() {
   const queryClient = useQueryClient();
   const [opened, handlers] = useDisclosure(false);
+  const [taskLoading, setTaskLoading] = React.useState<string>('');
+
   const taskQuery = useQuery<TaskType[], Error>({
     queryKey: ['tasks'],
     queryFn: async () => RepositoryData.listTask(),
@@ -66,6 +68,7 @@ function App() {
     mutationKey: ['completeTask'],
     mutationFn: async (data) => RepositoryData.completeTask(data),
     onSuccess: () => {
+      setTaskLoading('');
       notifications.show({
         color: 'green',
         title: 'Success',
@@ -76,6 +79,7 @@ function App() {
       });
     },
     onError: (error) => {
+      setTaskLoading('');
       notifications.show({
         color: 'red',
         title: 'Error',
@@ -88,6 +92,7 @@ function App() {
     mutationKey: ['removeTask'],
     mutationFn: async (data) => RepositoryData.removeTask(data),
     onSuccess: () => {
+      setTaskLoading('');
       notifications.show({
         color: 'green',
         title: 'Success',
@@ -98,6 +103,7 @@ function App() {
       });
     },
     onError: (error) => {
+      setTaskLoading('');
       notifications.show({
         color: 'red',
         title: 'Error',
@@ -114,6 +120,7 @@ function App() {
         color: 'red',
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskQuery.error, taskQuery.isError]);
 
   return (
@@ -168,7 +175,9 @@ function App() {
                           aria-label="Complete task"
                           disabled={task.status === 'completed'}
                           variant="filled"
-                          loading={completeTask.isPending}
+                          loading={
+                            completeTask.isPending && taskLoading === task.id
+                          }
                           onClick={() => handleCompleteTask(task)}
                         >
                           <IconCheck color="white" />
@@ -177,7 +186,9 @@ function App() {
                           color="red"
                           variant="subtle"
                           aria-label="Remove task"
-                          loading={removeTask.isPending}
+                          loading={
+                            removeTask.isPending && taskLoading === task.id
+                          }
                           onClick={() => handleRemoveTask(task)}
                         >
                           <IconTrash color="red" />
@@ -210,12 +221,14 @@ function App() {
   }
 
   function handleCompleteTask(data: TaskType) {
-    if (completeTask.isPending) return;
+    if (completeTask.isPending || data.status === 'completed') return;
+    setTaskLoading(data.id);
     completeTask.mutate(data);
   }
 
   function handleRemoveTask(data: TaskType) {
     if (removeTask.isPending) return;
+    setTaskLoading(data.id);
     removeTask.mutate(data);
   }
 }
