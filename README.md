@@ -6,12 +6,12 @@ Requirements:
 
 ## Web project
 
-## Install dependencies
+### Install dependencies
 ```bash
 npm install
 ```
 
-## Run project
+### Run project
 
 For development:
 ```bash
